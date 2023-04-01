@@ -2,7 +2,7 @@
 
 This project implements a really basic socket-based HTTP webserver.
 
-The motivation behind this project was to implmenet a way to accept HTTP requests, process the data in it (if any), and return an HTTP response; I wanted it to be accesible via Python `requests`, `cURL`, or a browser.
+The motivation behind this project was to implement a way to accept HTTP requests, process the data in it (if any), and return an HTTP response; I wanted it to be accesible via Python `requests`, `curl`, or a browser.
 
 It's not necessary to wire the Pico W to anything. Simply plug in a power source via USB and it'll start working. To monitor the server, run:
 ```bash
