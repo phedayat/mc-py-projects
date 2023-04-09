@@ -16,5 +16,7 @@ while True:
     x = round(imu.gyro.x)
     y = round(imu.gyro.y)
     z = round(imu.gyro.z)
+    with open("data.json", "a") as f:
+        f.write(",".join(imu))
     disp.send_to_display(f"{x}, {y}, {z}", r=1)
-    sleep(0.01)
+    sleep(1)
