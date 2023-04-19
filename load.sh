@@ -22,11 +22,7 @@ echo "Collected files currently onboard the Pico..."
 #	the Pico
 
 for i in $currentPicoFiles; do
-	if [[ -d "$i" ]]; then
-		ampy rmdir $i
-	else
-		ampy rm $i
-	fi
+	([[ -d "$i" ]] && ampy rmdir $i) || ampy rm $i
 done
 echo "Removed all files from Pico..."
 
