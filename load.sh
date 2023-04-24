@@ -22,12 +22,10 @@ collect_pico_items(){
 	echo "[SUCCESS] Collected items currently onboard the Pico"
 }
 
-# TODO Add if-statement here and corresponding option
-#	for `update`, meaning we don't need to clear
-#	the Pico
+# [TODO] Add getopt for `update`, i.e. don't clear the Pico
 remove_pico_items(){
 	echo "[   3   ] Removing all files from Pico..."
-	for i in $1; do
+	for i in "$@"; do
 		([[ -d "$i" ]] && ampy rmdir $i) || ampy rm $i
 	done
 	echo "[SUCCESS] Removed all files from Pico."
@@ -35,7 +33,7 @@ remove_pico_items(){
 
 loading_pico(){
 	echo "[   4   ] Loading all files from $projectRoot onboard the Pico"
-	for i in $1; do
+	for i in "$@"; do
 		ampy put $i
 	done
 	echo "[SUCCESS] Loaded all files from $projectRoot onboard the Pico"
