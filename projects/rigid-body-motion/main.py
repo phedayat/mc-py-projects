@@ -1,9 +1,10 @@
 import json
 
 from os import mkdir
-from src.imu import MPU6050
+from sys import exit
 from machine import Pin, I2C
 from time import sleep, time
+from src.drivers.imu import MPU6050
 
 def get_config():
     with open("/config.json") as f:
@@ -34,7 +35,12 @@ def create_entry(i, imu_dev):
     accel = get_accel_list(imu_dev)
     gyro = get_gyro_list(imu_dev)
     row = [i, time(), accel[0], accel[1], accel[2], gyro[0], gyro[1], gyro[2]]
-    return ",".join(row)
+    return ",".join(map(lambda x: str(x), row))
+
+def run_unit(i, imu_dev, file, sleep_time):
+    row = create_entry(i, imu_dev)
+    file.write(f"{row}\n")
+    sleep(sleep_time)
 
 if __name__=="__main__":
     # Prepare MPU6050 driver
@@ -42,20 +48,26 @@ if __name__=="__main__":
     mpu = MPU6050(i2c)
 
     # Configure and prepare the run
+    config = get_config()
     metadata = {
-        "run_id": "test_run_2",
+        "run_id": "test_run_ticks2",
         "fields": ["index", "time", "ax", "ay", "az", "gx", "gy", "gz"],
     }
-    run_path = init_run(metadata["run_id"], metadata)
+    run_path = init_run(metadata)
     run_csv_path = build_run_csv_path(run_path, metadata["run_id"])
 
     # Begin the run
     led = Pin(25, Pin.OUT)
+    sleep_time = config["sleep_time"]
+    ticks = config["ticks"]
     with open(run_csv_path, "a") as f:
-        i = 0
         led.value(1)
-        while True:
-            row = create_entry(i, mpu)
-            f.write(f"{row}\n")
+        infty = ticks < 0
+        i = 0
+        while infty or i < ticks:
             i += 1
-            sleep(1.5)
+            run_unit(i, mpu, f, sleep_time)
+            
+    # Turn off LED and exit script
+    led.value(0)
+    exit(0)
