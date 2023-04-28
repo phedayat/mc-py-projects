@@ -10,6 +10,8 @@ It's expected that a microSD card will be connected to the Pico and used for sto
 
 When the Pico runs, it'll read from the MPU6050 and create an entry for the CSV `run_id.csv`.
 
+The `ticks` global configuration property controls how many times the Pico reads from the MPU6050. If `ticks < 0`, then we're telling the Pico to collect data indefinitely. Otherwise, the Pico will read `ticks` many times, while sleeping for `sleep_time` seconds between each read. Once `ticks` is reached, we exit. In the case of an indefinite run, I setup a button from my Pico dev board to allow me to stop the data collection process more gracefully than just pulling the power.
+
 ## Pin Mapping
 ---
 
