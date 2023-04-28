@@ -69,10 +69,8 @@ if __name__=="__main__":
             while infty or i < ticks:
                 run_unit(i, mpu, f, sleep_time)
                 i += 1
-                
-        # Turn off LED and exit script
-        led.value(0)
-        exit(0)
     except KeyboardInterrupt:
+        print("SIGINT")
+    finally:
         led.value(0)
         exit(0)
