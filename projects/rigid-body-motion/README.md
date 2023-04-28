@@ -13,15 +13,16 @@ When the Pico runs, it'll read from the MPU6050 and create an entry for the CSV 
 ## Pin Mapping
 ---
 
-|Device|DevPin|PicoGP|PicoPin|
-|---|---|---|---|
-| MicroSD | `CS` | `GP1` | 2 |
-|| `SCK` | `GP2` | 4 |
-|| `MOSI` | `GP3` | 5 |
-|| `MISO` | `GP0` | 1 |
-|| `VCC` |-| `5V` |
-|| `GND` |-| `GND` |
-| MPU6050 | `VCC` |-| `3.3V` |
-|| `GND` |-| `GND` |
-|| `SCL` | `GP5` | 7 |
-|| `SDA` | `GP4` | 6 |
+|Device|Interface|DevPin|PicoGP|PicoPin|
+|:---:|:---:|:---:|:---:|:---:|
+| MicroSD | SPI | `CS` | `GP1` | 2 |
+||| `SCK` | `GP2` | 4 |
+||| `MOSI` | `GP3` | 5 |
+||| `MISO` | `GP0` | 1 |
+||| `VCC` |-| `5V` |
+||| `GND` |-| `GND` |
+| MPU6050 | I2C | `VCC` |-| `3.3V` |
+||| `GND` |-| `GND` |
+||| `SCL` | `GP5` | 7 |
+||| `SDA` | `GP4` | 6 |
+| Off Button (Pico dev board) |-| `K1` | `GP15` | 20 |
