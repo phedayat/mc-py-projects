@@ -16,23 +16,15 @@ collect_project_items(){
 	echo "[SUCCESS] Collected project items from $projectRoot..."
 }
 
-collect_pico_items(){
-	echo "[   2   ] Collecting items currently onboard the Pico..."
-	picoItems=$(ampy ls)
-	echo "[SUCCESS] Collected items currently onboard the Pico"
-}
-
 # [TODO] Add getopt for `update`, i.e. don't clear the Pico
 remove_pico_items(){
-	echo "[   3   ] Removing all files from Pico..."
-	for i in "$@"; do
-		([[ -d "$i" ]] && ampy rmdir $i) || ampy rm $i
-	done
+	echo "[   2   ] Removing all files from Pico..."
+	ampy reset
 	echo "[SUCCESS] Removed all files from Pico."
 }
 
 loading_pico(){
-	echo "[   4   ] Loading all files from $projectRoot onboard the Pico"
+	echo "[   3   ] Loading all files from $projectRoot onboard the Pico"
 	for i in "$@"; do
 		ampy put $i
 	done
@@ -43,12 +35,10 @@ check_for_device
 
 projectRoot=$1
 projItems=()
-picoItems=()
 
 collect_project_items
-collect_pico_items
 
-remove_pico_items $picoItems
+remove_pico_items
 loading_pico $projItems
 
 echo "[FINISHED] Project loaded. You may now disconnect the board."
