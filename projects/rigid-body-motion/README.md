@@ -19,9 +19,9 @@ When the Pico runs, it'll read from the MPU6050 and create an entry for the CSV 
 || `SCK` | `GP2` | 4 |
 || `MOSI` | `GP3` | 5 |
 || `MISO` | `GP0` | 1 |
-|| `VCC` | `5V` |-|
-|| `GND` | `GND` |-|
-| MPU6050 | `VCC` | `3.3` |-|
-|| `GND` | `GND` |-|
+|| `VCC` |-| `5V` |
+|| `GND` |-| `GND` |
+| MPU6050 | `VCC` |-| `3.3V` |
+|| `GND` |-| `GND` |
 || `SCL` | `GP5` | 7 |
 || `SDA` | `GP4` | 6 |
