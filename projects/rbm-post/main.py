@@ -1,4 +1,3 @@
-from collections import Counter
 from argparse import ArgumentParser
 
 from src.runs import RunObject
