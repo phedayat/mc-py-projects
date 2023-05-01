@@ -1,4 +1,5 @@
 from .config import Config
+from .data_wrapper import DataWrapper
 
 class RunObject:
     def __init__(self, run_id):
@@ -10,3 +11,7 @@ class RunObject:
     @property
     def config(self):
         return Config(self.config_path)
+    
+    @property
+    def data(self):
+        return DataWrapper(self.data_path)
