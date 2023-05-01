@@ -4,7 +4,7 @@ class Config:
     def __init__(self, config):
         self.config = self._get_config_obj(config)
 
-    def get(self, key):
+    def __getitem__(self, key):
         if key in self.config:
             return self.config[key]
         return None
