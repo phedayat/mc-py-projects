@@ -8,7 +8,7 @@ ARGS = [
 ]
 
 def get_args():
-    parser = ArgumentParser(prog="RBM Post Processing")
+    parser = ArgumentParser(prog="Rigid Body Motion Data Processing")
     [parser.add_argument(arg) for arg in ARGS]
     return parser.parse_args()
 
