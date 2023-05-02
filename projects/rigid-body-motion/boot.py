@@ -4,7 +4,7 @@ sys.path.append("/src")
 from os import mount
 from machine import Pin
 
-from src.SdSpiWrapper import SdSpiWrapper
+from src.sd_spi_wrapper import SdSpiWrapper
 
 sck = Pin(2)
 mosi = Pin(3)

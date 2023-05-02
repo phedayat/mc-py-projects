@@ -4,12 +4,10 @@ from os import mkdir
 from sys import exit
 from machine import Pin, I2C
 from time import sleep, time
-from src.drivers.imu import MPU6050
 
-def get_config():
-    with open("/config.json") as f:
-        config = json.load(f)
-        return config
+from src.config import Config
+from src.drivers.imu import MPU6050
+from src.mpu_wrapper import MpuWrapper
 
 def init_run(metadata):
     run_id = metadata["run_id"]
@@ -43,34 +41,44 @@ def run_unit(i, imu_dev, file, sleep_time):
     sleep(sleep_time)
 
 if __name__=="__main__":
-    # Prepare MPU6050 driver
-    i2c = I2C(0, sda=Pin(4), scl=Pin(5), freq=400000)
-    mpu = MPU6050(i2c)
+    try:
+        # Configure and prepare the MPU
+        mpu = MpuWrapper()
 
-    # Configure and prepare the run
-    config = get_config()
-    metadata = {
-        "run_id": "run_off_button4",
-        "fields": ["index", "time", "ax", "ay", "az", "gx", "gy", "gz"],
-    }
-    metadata.update(config)
-    run_path = init_run(metadata)
-    run_csv_path = build_run_csv_path(run_path, metadata["run_id"])
+        # Configure and prepare the run
+        config = Config()
+        run = Run(config, mpu.unit) # [TODO]
+        
+        # [TODO]
+        # Get run directory and data paths (on SD)
+        run_path = run.path
+        run_csv_path = run.data_path
 
-    # Begin the run
-    led = Pin(25, Pin.OUT)
-    off_button = Pin(15, Pin.IN, Pin.PULL_DOWN)
-    sleep_time = config["sleep_time"]
-    ticks = config["ticks"]
-    with open(run_csv_path, "a") as f:
-        led.value(1)
-        infty = ticks < 0
-        i = 0
-        while infty or i < ticks:
-            print(off_button.value())
-            if not off_button.value():
-                break
-            run_unit(i, mpu, f, sleep_time)
-            i += 1
-    led.value(0)
-    exit(0)
+        run_path = init_run(config)
+        run_csv_path = build_run_csv_path(run_path, config["run_id"])
+
+        led = LedWrapper() # [TODO]
+        off_buttton = ButtonWrapper() # [TODO]
+
+        # Begin the run
+        led = Pin(25, Pin.OUT)
+        off_button = Pin(15, Pin.IN, Pin.PULL_DOWN)
+
+        sleep_time = config["sleep_time"]
+        ticks = config["ticks"]
+
+        with open(run_csv_path, "a") as f:
+            led.value(1)
+            infty = ticks < 0
+            infty = run.continuous # [TODO]
+            i = 0
+            while infty or i < ticks:
+                if not off_button.value():
+                    break
+                run_unit(i, mpu.driver, f, sleep_time)
+                i += 1
+    except KeyboardInterrupt:
+        print("SIGINT")
+    finally:
+        led.value(0)
+        exit(0)
