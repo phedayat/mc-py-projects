@@ -14,9 +14,11 @@ def get_config():
 def init_run(metadata):
     run_id = metadata["run_id"]
     run_path = f"/sd/{run_id}"
+
     mkdir(run_path)
     with open(f"{run_path}/metadata.json", "a") as metadata_file:
         json.dump(metadata, metadata_file)
+    
     with open(f"{run_path}/{run_id}.csv", "w") as f:
         headers = ",".join(metadata["fields"])
         f.write(f"{headers}\n")
@@ -43,34 +45,32 @@ def run_unit(i, imu_dev, file, sleep_time):
     sleep(sleep_time)
 
 if __name__=="__main__":
-    # Prepare MPU6050 driver
-    i2c = I2C(0, sda=Pin(4), scl=Pin(5), freq=400000)
-    mpu = MPU6050(i2c)
+    try:
+        # Prepare MPU6050 driver
+        i2c = I2C(0, sda=Pin(4), scl=Pin(5), freq=400000)
+        mpu = MPU6050(i2c)
 
-    # Configure and prepare the run
-    config = get_config()
-    metadata = {
-        "run_id": "run_off_button4",
-        "fields": ["index", "time", "ax", "ay", "az", "gx", "gy", "gz"],
-    }
-    metadata.update(config)
-    run_path = init_run(metadata)
-    run_csv_path = build_run_csv_path(run_path, metadata["run_id"])
+        # Configure and prepare the run
+        config = get_config()
+        run_path = init_run(config)
+        run_csv_path = build_run_csv_path(run_path, config["run_id"])
 
-    # Begin the run
-    led = Pin(25, Pin.OUT)
-    off_button = Pin(15, Pin.IN, Pin.PULL_DOWN)
-    sleep_time = config["sleep_time"]
-    ticks = config["ticks"]
-    with open(run_csv_path, "a") as f:
-        led.value(1)
-        infty = ticks < 0
-        i = 0
-        while infty or i < ticks:
-            print(off_button.value())
-            if not off_button.value():
-                break
-            run_unit(i, mpu, f, sleep_time)
-            i += 1
-    led.value(0)
-    exit(0)
+        # Begin the run
+        led = Pin(25, Pin.OUT)
+        off_button = Pin(15, Pin.IN, Pin.PULL_DOWN)
+        sleep_time = config["sleep_time"]
+        ticks = config["ticks"]
+        with open(run_csv_path, "a") as f:
+            led.value(1)
+            infty = ticks < 0
+            i = 0
+            while infty or i < ticks:
+                if not off_button.value():
+                    break
+                run_unit(i, mpu, f, sleep_time)
+                i += 1
+    except KeyboardInterrupt:
+        print("SIGINT")
+    finally:
+        led.value(0)
+        exit(0)
