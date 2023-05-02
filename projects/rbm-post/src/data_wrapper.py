@@ -66,6 +66,7 @@ class DataExctrator:
         return sum([k*ops_time_counts[k] for k in ops_time_counts if k != 0])/self.nrows
 
     def summary(self):
+        print(f"[      RUN_ID     ]\t{self.config['run_id']}")
         print(f"[EXPECTED_DURATION]\t{self.expected_duration}\tseconds")
         print(f"[     DURATION    ]\t{self.duration}\tseconds")
         print(f"[   AVG_OPS_TIME  ]\t{self.avg_ops_time()}\tseconds")
