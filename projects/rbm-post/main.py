@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 
 from src.runs import RunObject
-from src.data_wrapper import DataExctrator
+from src.operational import Operational
 
 ARGS = [
     "--run-id",
@@ -16,6 +16,6 @@ if __name__=="__main__":
     args = get_args()
 
     run = RunObject(args.run_id)
-    info = DataExctrator(run.data.df, run.config)
+    ops_info = Operational(run.data.df, run.config)
 
-    info.summary()
+    ops_info.summary()
