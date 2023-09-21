@@ -1,10 +1,11 @@
 import ujson
 
-from time import sleep
+from utime import sleep
 from usocket import socket
 from network import WLAN, STA_IF
 
 from .request_handler import RequestHandler
+from .response_handler import ResponseHandler
 
 class WifiHandler:
     def __init__(self, config_path: str):
@@ -31,7 +32,8 @@ class WifiHandler:
     
     def connect(self):
         return self._connect_wlan()
-    
+
+
 class Server:
     MAX_BYTES = 4096
 
@@ -47,23 +49,34 @@ class Server:
         conn.listen(max_requests)
         self.conn = conn
     
-    def serve(self):
+    def _send_response(self, client, start_line, headers, data):
+        client.send(start_line)
+        for header in headers:
+            client.send(header)
+        client.sendall(data)
+
+    def serve(self, routes):
         if not self.conn:
-            return "Please open a socket"
+            raise ValueError("No socket open")
         while True:
             sleep(1)
             client = self.conn.accept()[0]
             msg = client.recv(self.MAX_BYTES)
-            print(msg)
-            headers, data = self._process_message(msg)
+            
+            req_handler = RequestHandler(msg)
 
-            n_bytes = len(data)
-            bytes_left = self._message_bytes_left(headers, n_bytes)
-            if bytes_left > 0:
-                temp_message = client.recv(bytes_left)
-                _, temp_data = self._process_message(temp_message)
-                data += temp_data
+            while req_handler.unfinished_data:
+                msg = client.recv(self.MAX_BYTES)
+                req_handler.add_missing_data(msg)
 
-            print(headers)
-            print(data)
-            break
+            req = req_handler.get_request()
+            if req.route not in routes:
+                # return a response
+                return "Route does not exist"
+            data = routes[req.route](req.method, req.data)
+            res_handler = ResponseHandler("200 OK", {"result": data})
+            self._send_response(
+                client, res_handler.get_start_line(),
+                res_handler.get_headers(), res_handler.get_data()
+            )
+            client.close()
